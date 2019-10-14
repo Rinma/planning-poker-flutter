@@ -1,0 +1,35 @@
+jobs:
+- name: build-android
+  plan:
+  - get: app-sources
+    trigger: true
+  - config:
+      image_resource:
+        source:
+          repository: cirrusci/flutter
+          tag: latest
+        type: docker-image
+      inputs:
+      - name: app-sources
+        path: /project
+      outputs:
+      - name: apk
+        path: build/app/outputs/apk/release/
+      platform: linux
+      run:
+        args:
+        - build
+        - apk
+        - --split-per-abi
+        dir: /project
+        path: /home/cirrus/sdks/flutter/bin/flutter
+        user: root
+    task: run-flutter-build
+  public: true
+resources:
+- name: app-sources
+  check_every: 5m
+  icon: git
+  source:
+    uri: https://codeberg.org/Rinma/Planning-Poker-Flutter.git
+  type: git
